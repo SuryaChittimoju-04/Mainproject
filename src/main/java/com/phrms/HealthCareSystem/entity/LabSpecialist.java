@@ -1,23 +1,19 @@
 package com.phrms.HealthCareSystem.entity;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import nonapi.io.github.classgraph.json.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @Data
-@Document(collection = "doctors")
-public class Doctor {
+@Document(collection = "labSpecialist")
+public class LabSpecialist {
     @Id
     private String id;
-    private String hospitalId;
+    private String laboratoryId;
     private String name;
     private String password;
     private String email;
     private String phoneNumber;
     private String gender;
     private String specialization;
-    private Boolean isAffiliated;
-    private List<String> labs;
 }

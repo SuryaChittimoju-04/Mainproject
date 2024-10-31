@@ -15,7 +15,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry.requestMatchers("/HCS/auth/**").permitAll()
+                authorizationManagerRequestMatcherRegistry.requestMatchers("/HCS/**").permitAll()
                         .anyRequest().authenticated()).exceptionHandling(Customizer.withDefaults()).sessionManagement(sessionManagement->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 //        httpSecurity.addFilterBefore()
