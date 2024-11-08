@@ -1,23 +1,42 @@
 package com.phrms.HealthCareSystem.controller;
 
+import com.phrms.HealthCareSystem.entity.Hospital;
+import com.phrms.HealthCareSystem.entity.Specialization;
 import com.phrms.HealthCareSystem.model.ApiResponse;
+import com.phrms.HealthCareSystem.service.management.hospital.HospitalService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/HCS/management")
 public class ManagementController {
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(){
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registration Successful",""));
+
+    @Autowired
+    private HospitalService hospitalService;
+
+    @PostMapping("/register/hospital")
+    public ResponseEntity<ApiResponse> registerHospital(@RequestBody Hospital hospitalRegisterRequest){
+        try {
+            hospitalService.RegisterHospital(hospitalRegisterRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registration Successful",hospitalRegisterRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Some Error occured",e.getMessage()));
+        }
     }
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(){
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",""));
+    }
+    @PostMapping("/hospital/addSpecialization")
+    public ResponseEntity<ApiResponse> addSpecialization(@RequestBody Specialization specialization){
+        try {
+            hospitalService.addSpecialization(specialization);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Specialization Added Successfully",specialization));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Some Error occured",e.getMessage()));
+        }
     }
     @GetMapping("/employees")
     public ResponseEntity<ApiResponse> getEmployees(){

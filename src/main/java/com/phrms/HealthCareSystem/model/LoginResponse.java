@@ -6,4 +6,5 @@ import lombok.Data;
 public class LoginResponse {
     private String access_token;
     private String refresh_token;
+    private String name;
 }

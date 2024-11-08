@@ -13,6 +13,8 @@ public class Hospital {
     private Boolean isApproved;
     private String dbLink;
     private String dbType;
+    private String email;
+    private String password;
     private String address;
     private String location;
     private Infra infra;

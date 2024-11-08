@@ -3,10 +3,15 @@ package com.phrms.HealthCareSystem.service.slot;
 import com.phrms.HealthCareSystem.dto.BookSlot;
 import com.phrms.HealthCareSystem.dto.CreateSlot;
 import com.phrms.HealthCareSystem.entity.Slot;
+import com.phrms.HealthCareSystem.model.SlotResponse;
+import com.phrms.HealthCareSystem.repository.DoctorRepository;
 import com.phrms.HealthCareSystem.repository.SlotRepository;
+import com.phrms.HealthCareSystem.repository.SpecializationRepository;
+import com.phrms.HealthCareSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,19 +19,49 @@ import java.util.List;
 public class SlotServiceImpl implements SlotService{
 
     @Autowired
-    SlotRepository slotRepository;
+    private SlotRepository slotRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private SpecializationRepository specializationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
-    public List<Slot> availableSlots() {
-        return slotRepository.findAvailableSlots(new Date());
+    public List<Slot> availableSlots(String doctorId) {
+        return slotRepository.findByStartTimeAfterAndDoctorId(new Date(),doctorId);
     }
 
     @Override
-    public List<Slot> bookedSlots(String userId, Boolean isDoc) {
+    public List<SlotResponse> bookedSlots(String userId, Boolean isDoc) {
+        List<SlotResponse> slotResponseList;
         if(isDoc){
-            return slotRepository.findByDoctorIdAndStartTimeAfter(userId,new Date());
+            slotResponseList = slotRepository.findByDoctorIdAndStartTimeAfter(userId,new Date())
+                    .stream()
+                    .map(slot -> {
+                        SlotResponse response = new SlotResponse();
+                        response.setName(userRepository.findById(slot.getPatientId()).get().getPatientName());
+                        response.setSpecialization(specializationRepository.findById(doctorRepository.findById(slot.getDoctorId()).get().getSpecialization()).get().getSpecialization());
+                        response.setStartTime(slot.getStartTime());
+                        response.setEndTime(slot.getEndTime());
+                        return response;
+                    }).toList();
         }else {
-            return slotRepository.findByPatientIdAndStartTimeAfter(userId,new Date());
+            slotResponseList = slotRepository.findByPatientIdAndStartTimeAfter(userId,new Date())
+                    .stream()
+                    .map(slot -> {
+                        SlotResponse response = new SlotResponse();
+                        response.setName(doctorRepository.findById(slot.getDoctorId()).get().getName());
+                        response.setSpecialization(specializationRepository.findById(doctorRepository.findById(slot.getDoctorId()).get().getSpecialization()).get().getSpecialization());
+                        response.setStartTime(slot.getStartTime());
+                        response.setEndTime(slot.getEndTime());
+                        return response;
+                    }).toList();
         }
+        return slotResponseList;
     }
 
     @Override
@@ -39,15 +74,28 @@ public class SlotServiceImpl implements SlotService{
     }
 
     @Override
-    public void bookSlot(BookSlot bookSlot) throws Exception{
+    public void bookSlot(BookSlot bookSlot, String patientId) throws Exception{
         Slot slot = isSlotExists(bookSlot.getId());
         if (slot == null){
             throw new Exception("Invalid Slot");
         }
-        slot.setPatientId(bookSlot.getPatientId());
-        slot.setDoctorId(bookSlot.getDoctorId());
+        slot.setPatientId(patientId);
         slot.setIsBooked(true);
         slotRepository.save(slot);
+    }
+
+    @Override
+    public List<SlotResponse> history(String patientId) throws Exception {
+        return slotRepository.findByPatientIdAndEndTimeBefore(patientId,new Date())
+                .stream()
+                .map(slot -> {
+                    SlotResponse response = new SlotResponse();
+                    response.setName(doctorRepository.findById(slot.getDoctorId()).get().getName());
+                    response.setSpecialization(specializationRepository.findById(doctorRepository.findById(slot.getDoctorId()).get().getSpecialization()).get().getSpecialization());
+                    response.setStartTime(slot.getStartTime());
+                    response.setEndTime(slot.getEndTime());
+                    return response;
+                }).toList();
     }
 
     public Slot isSlotExists(String slotId){
