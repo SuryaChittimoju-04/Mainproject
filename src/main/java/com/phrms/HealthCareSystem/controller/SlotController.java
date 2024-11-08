@@ -3,8 +3,11 @@ package com.phrms.HealthCareSystem.controller;
 import com.phrms.HealthCareSystem.dto.BookSlot;
 import com.phrms.HealthCareSystem.dto.CreateSlot;
 import com.phrms.HealthCareSystem.entity.Slot;
+import com.phrms.HealthCareSystem.entity.User;
 import com.phrms.HealthCareSystem.model.ApiResponse;
 import com.phrms.HealthCareSystem.service.slot.SlotService;
+import com.phrms.HealthCareSystem.service.user.UserService;
+import com.phrms.HealthCareSystem.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,13 @@ import java.util.List;
 public class SlotController {
 
     @Autowired
-    SlotService slotService;
+    private SlotService slotService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
+
+    @Autowired
+    private UserService userService;
     @GetMapping("/available")
     public ResponseEntity<ApiResponse> availableSlots(){
         List<Slot> availableSlots = slotService.availableSlots();
@@ -25,8 +34,10 @@ public class SlotController {
     }
 
     @GetMapping("/booked")
-    public ResponseEntity<ApiResponse> bookedSlot(){
-        List<Slot> bookedSlots = slotService.bookedSlots("",true);
+    public ResponseEntity<ApiResponse> bookedSlot(@RequestHeader String Authorization){
+        String aadharNumber = jwtUtil.extractUsername(Authorization.substring(7));
+        User user = userService.patientExist(aadharNumber);
+        List<Slot> bookedSlots = slotService.bookedSlots(user.getId(),false);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Appointments",bookedSlots));
     }
 
