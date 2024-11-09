@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService{
         }
         User user = UserMapper.INSTANCE.toEntity(userDto);
         userRepository.save(user);
+        sendEmail(user.getAadharNumber());
     }
     public User patientExist(String aadharNumber) {
         return userRepository.findByAadharNumber(aadharNumber).orElse(null);

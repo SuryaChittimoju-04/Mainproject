@@ -51,10 +51,10 @@ public class AuthController {
     public ResponseEntity<ApiResponse> register(@RequestBody UserDto userDto)throws Exception{
         try {
             userService.registerUser(userDto);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registerd Succesfully",userDto.getPatientEmail()));
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((new ApiResponse(500,"InternalSerive Error Occured","Surya")));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((new ApiResponse(500,"InternalSerive Error Occured",e.getMessage())));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registerd Succesfully",userDto.getPatientName()));
     }
 }
