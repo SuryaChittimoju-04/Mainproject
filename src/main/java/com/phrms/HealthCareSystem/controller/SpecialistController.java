@@ -1,8 +1,10 @@
 package com.phrms.HealthCareSystem.controller;
 
+import com.phrms.HealthCareSystem.dto.DoctorLoginRequest;
 import com.phrms.HealthCareSystem.entity.Doctor;
 import com.phrms.HealthCareSystem.entity.Specialization;
 import com.phrms.HealthCareSystem.model.ApiResponse;
+import com.phrms.HealthCareSystem.model.DoctorLoginResponse;
 import com.phrms.HealthCareSystem.model.DoctorResponse;
 import com.phrms.HealthCareSystem.service.management.hospital.HospitalService;
 import com.phrms.HealthCareSystem.service.specialist.doctor.DoctorService;
@@ -32,8 +34,13 @@ public class SpecialistController {
         }
     }
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(){
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",""));
+    public ResponseEntity<ApiResponse> login(@RequestBody DoctorLoginRequest loginRequest){
+        try {
+            DoctorLoginResponse doctorLoginResponse = doctorService.doctorLogin(loginRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",doctorLoginResponse));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Invalid Credentials","Please Check your details"));
+        }
     }
     @GetMapping("/specializations")
     public ResponseEntity<ApiResponse> specializationsList(){

@@ -1,6 +1,7 @@
 package com.phrms.HealthCareSystem.controller;
 
 import com.phrms.HealthCareSystem.dto.LoginRequest;
+import com.phrms.HealthCareSystem.dto.RefreshTokenRequest;
 import com.phrms.HealthCareSystem.dto.UserDto;
 import com.phrms.HealthCareSystem.entity.User;
 import com.phrms.HealthCareSystem.model.ApiResponse;
@@ -52,6 +53,19 @@ public class AuthController {
         try {
             userService.registerUser(userDto);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registerd Succesfully",userDto.getPatientEmail()));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((new ApiResponse(500,"InternalSerive Error Occured",e.getMessage())));
+        }
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        try {
+            LoginResponse loginResponse = authService.refreshToken(refreshTokenRequest);
+            if (loginResponse.getAccess_token().isBlank()){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500,"Invalid Token!","Token Expired"));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Refreshed Tokens",loginResponse));
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((new ApiResponse(500,"InternalSerive Error Occured",e.getMessage())));
