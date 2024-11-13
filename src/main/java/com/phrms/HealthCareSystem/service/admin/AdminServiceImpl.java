@@ -2,10 +2,12 @@ package com.phrms.HealthCareSystem.service.admin;
 
 import com.phrms.HealthCareSystem.dto.AdminLoginRequest;
 import com.phrms.HealthCareSystem.dto.ApproveManagementRequest;
+import com.phrms.HealthCareSystem.dto.ManagementLoginRequest;
 import com.phrms.HealthCareSystem.entity.Admin;
 import com.phrms.HealthCareSystem.entity.Hospital;
 import com.phrms.HealthCareSystem.entity.Laboratory;
 import com.phrms.HealthCareSystem.model.AdminLoginResponse;
+import com.phrms.HealthCareSystem.model.ManagementLoginResponse;
 import com.phrms.HealthCareSystem.model.NewRegistrationsResponse;
 import com.phrms.HealthCareSystem.repository.AdminRepository;
 import com.phrms.HealthCareSystem.repository.HospitalRepository;
@@ -123,4 +125,40 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    @Override
+    public ManagementLoginResponse managementLogin(ManagementLoginRequest managementLoginRequest) throws Exception {
+        if (managementLoginRequest.getIsHospital()){
+            Optional<Hospital> hospital = hospitalRepository.findByEmail(managementLoginRequest.getEmail());
+            if (hospital.isPresent()){
+                Hospital hos = hospital.get();
+                if (hos.getPassword().equals(managementLoginRequest.getPassword())){
+                    ManagementLoginResponse response = new ManagementLoginResponse();
+                    response.setId(hos.getId());
+                    response.setIsHospital(true);
+                    response.setName(hos.getName());
+                    return response;
+                }else {
+                    throw new Exception("Invalid Credentials");
+                }
+            } else {
+                throw new Exception("Email Not Found");
+            }
+        }else {
+            Optional<Laboratory> laboratory = labRepository.findByEmail(managementLoginRequest.getEmail());
+            if (laboratory.isPresent()){
+                Laboratory lab = laboratory.get();
+                if (lab.getPassword().equals(managementLoginRequest.getPassword())){
+                    ManagementLoginResponse response = new ManagementLoginResponse();
+                    response.setId(lab.getId());
+                    response.setIsHospital(false);
+                    response.setName(lab.getName());
+                    return response;
+                }else {
+                    throw new Exception("Invalid Credentials");
+                }
+            } else {
+                throw new Exception("Email Not Found");
+            }
+        }
+    }
 }

@@ -19,7 +19,7 @@ public class HospitalServiceImpl implements HospitalService{
 
     @Override
     public void RegisterHospital(Hospital hospitalRegisterRequest) throws Exception {
-        if (hospitalRepository.findByName(hospitalRegisterRequest.getName()).isEmpty()){
+        if (hospitalRepository.findByEmail(hospitalRegisterRequest.getEmail()).isEmpty()){
             hospitalRepository.save(hospitalRegisterRequest);
         }else {
             throw new Exception("Hospital name Already taken");

@@ -1,9 +1,12 @@
 package com.phrms.HealthCareSystem.controller;
 
+import com.phrms.HealthCareSystem.dto.ManagementLoginRequest;
 import com.phrms.HealthCareSystem.entity.Hospital;
 import com.phrms.HealthCareSystem.entity.Laboratory;
 import com.phrms.HealthCareSystem.entity.Specialization;
 import com.phrms.HealthCareSystem.model.ApiResponse;
+import com.phrms.HealthCareSystem.model.ManagementLoginResponse;
+import com.phrms.HealthCareSystem.service.admin.AdminService;
 import com.phrms.HealthCareSystem.service.management.hospital.HospitalService;
 import com.phrms.HealthCareSystem.service.management.lab.LabService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,9 @@ public class ManagementController {
 
     @Autowired
     private LabService labService;
+
+    @Autowired
+    private AdminService adminService;
 
     @PostMapping("/register/hospital")
     public ResponseEntity<ApiResponse> registerHospital(@RequestBody Hospital hospitalRegisterRequest){
@@ -40,8 +46,13 @@ public class ManagementController {
         }
     }
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(){
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",""));
+    public ResponseEntity<ApiResponse> login(@RequestBody ManagementLoginRequest managementLoginRequest){
+        try{
+            ManagementLoginResponse loginResponse = adminService.managementLogin(managementLoginRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",loginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500,"Error Occured",e.getMessage()));
+        }
     }
     @PostMapping("/hospital/addSpecialization")
     public ResponseEntity<ApiResponse> addSpecialization(@RequestBody Specialization specialization){

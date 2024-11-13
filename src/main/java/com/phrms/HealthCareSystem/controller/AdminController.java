@@ -41,7 +41,7 @@ public class AdminController {
     @PostMapping("/validateRegistration")
     public ResponseEntity<ApiResponse> validateRegistration(@RequestBody ApproveManagementRequest management){
         try {
-//            adminService.
+            adminService.approveRegistration(management);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Approved Successfully","Done"));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500,"Something Went Wrong",e.getMessage()));
