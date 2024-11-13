@@ -41,6 +41,7 @@ public class DoctorServiceImpl implements DoctorService {
                     DoctorLoginResponse loginResponse = new DoctorLoginResponse();
                     loginResponse.setId(doctor.get().getId());
                     loginResponse.setName(doctor.get().getName());
+                    loginResponse.setIsDoc(loginRequest.getIsDoc());
                     return loginResponse;
                 } else {
                     throw new Exception("Invalid Credentials");
@@ -55,6 +56,7 @@ public class DoctorServiceImpl implements DoctorService {
                     DoctorLoginResponse loginResponse = new DoctorLoginResponse();
                     loginResponse.setId(labSpecialist.get().getId());
                     loginResponse.setName(labSpecialist.get().getName());
+                    loginResponse.setIsDoc(loginRequest.getIsDoc());
                     return loginResponse;
                 }else {
                     throw new Exception("Invalid Credentials");
