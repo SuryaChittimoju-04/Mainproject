@@ -20,4 +20,7 @@ public interface SlotRepository extends MongoRepository<Slot, String> {
 
     @Query("{ 'patientId': ?0, 'endTime' : { $lte: ?1 } }")
     List<Slot> findByPatientIdAndEndTimeBefore(String patientId, Date currentTime);
+
+    @Query("{ 'doctorId': ?0, 'endTime' : { $gte: ?1 } }")
+    List<Slot> findByDoctorIdAndEndTimeBefore(String doctorId, Date currentTime);
 }

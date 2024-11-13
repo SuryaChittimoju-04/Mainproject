@@ -98,6 +98,21 @@ public class SlotServiceImpl implements SlotService{
                 }).toList();
     }
 
+    @Override
+    public List<SlotResponse> docHistory(String doctorId) throws Exception {
+        return slotRepository.findByDoctorIdAndEndTimeBefore(doctorId,new Date())
+                .stream()
+                .map(slot -> {
+                    SlotResponse response = new SlotResponse();
+                    response.setName(userRepository.findById(slot.getPatientId()).get().getPatientName());
+                    response.setSpecialization(specializationRepository.findById(doctorRepository.findById(slot.getDoctorId()).get().getSpecialization()).get().getSpecialization());
+                    response.setStartTime(slot.getStartTime());
+                    response.setEndTime(slot.getEndTime());
+                    return response;
+                }).toList();
+    }
+
+
     public Slot isSlotExists(String slotId){
         return slotRepository.findById(slotId).orElse(null);
     }

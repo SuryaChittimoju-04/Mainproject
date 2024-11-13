@@ -6,5 +6,6 @@ import lombok.Data;
 public class DoctorLoginRequest {
     private String email;
     private String password;
-    private String hospitalId;
+    private String managementId;
+    private Boolean isDoc;
 }

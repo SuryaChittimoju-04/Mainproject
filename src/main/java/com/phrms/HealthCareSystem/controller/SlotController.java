@@ -41,6 +41,15 @@ public class SlotController {
         List<SlotResponse> bookedSlots = slotService.bookedSlots(user.getId(),false);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Appointments",bookedSlots));
     }
+    @GetMapping("/upcoming")
+    public ResponseEntity<ApiResponse> upcomingSlots(@RequestParam String doctorId){
+        try {
+            List<SlotResponse> upcomingSlots = slotService.bookedSlots(doctorId,true);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Appointments",upcomingSlots));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500,"Slot Loading Failed",e.getMessage()));
+        }
+    }
 
     @PostMapping("/book")
     public ResponseEntity<ApiResponse> bookSlot(@RequestBody BookSlot bookSlot,@RequestHeader String Authorization){
@@ -59,7 +68,7 @@ public class SlotController {
         slotService.createSlot(createSlot);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"",""));
     }
-    @GetMapping("history")
+    @GetMapping("/history")
     public ResponseEntity<ApiResponse> history(@RequestHeader String Authorization){
         try{
             String aadharNumber = jwtUtil.extractUsername(Authorization.substring(7));
@@ -68,6 +77,15 @@ public class SlotController {
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"History Slots",slotResponseList));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"An Error Occured",e.getMessage()));
+        }
+    }
+    @GetMapping("/doc/history")
+    public ResponseEntity<ApiResponse> docHistory(@RequestParam String doctorId){
+        try {
+            List<SlotResponse> docHistory = slotService.docHistory(doctorId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"History Slots",docHistory));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500,"Slot History Failed",e.getMessage()));
         }
     }
 }

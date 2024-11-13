@@ -2,6 +2,7 @@ package com.phrms.HealthCareSystem.controller;
 
 import com.phrms.HealthCareSystem.dto.DoctorLoginRequest;
 import com.phrms.HealthCareSystem.entity.Doctor;
+import com.phrms.HealthCareSystem.entity.LabSpecialist;
 import com.phrms.HealthCareSystem.entity.Specialization;
 import com.phrms.HealthCareSystem.model.ApiResponse;
 import com.phrms.HealthCareSystem.model.DoctorLoginResponse;
@@ -25,47 +26,62 @@ public class SpecialistController {
     private HospitalService hospitalService;
 
     @PostMapping("/register/doctor")
-    public ResponseEntity<ApiResponse> registerDoctor(@RequestBody Doctor doctor){
+    public ResponseEntity<ApiResponse> registerDoctor(@RequestBody Doctor doctor) {
         try {
             doctorService.RegisterDoctor(doctor);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Registered Successfully",doctor));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "Registered Successfully", doctor));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Some Error occured",e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500, "Some Error occured", e.getMessage()));
         }
     }
+
+    @PostMapping("/register/lab")
+    public ResponseEntity<ApiResponse> registerLabSpecialist(@RequestBody LabSpecialist labSpecialist) {
+        try {
+            doctorService.registerLab(labSpecialist);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "Registered Successfully", labSpecialist));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500, "Some Error Occured", e.getMessage()));
+        }
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody DoctorLoginRequest loginRequest){
+    public ResponseEntity<ApiResponse> login(@RequestBody DoctorLoginRequest loginRequest) {
         try {
             DoctorLoginResponse doctorLoginResponse = doctorService.doctorLogin(loginRequest);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Logged in Successfully",doctorLoginResponse));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Invalid Credentials","Please Check your details"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "Logged in Successfully", doctorLoginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500, "Invalid Credentials", "Please Check your details"));
         }
     }
+
     @GetMapping("/specializations")
-    public ResponseEntity<ApiResponse> specializationsList(){
-        try{
+    public ResponseEntity<ApiResponse> specializationsList() {
+        try {
             List<Specialization> specializations = hospitalService.specilizationsList();
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"Available Specializations",specializations));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Some Error Occured",e.getMessage()));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "Available Specializations", specializations));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500, "Some Error Occured", e.getMessage()));
         }
     }
+
     @GetMapping("/doctors")
     public ResponseEntity<ApiResponse> doctorsList(@RequestParam String specialization) {
-        try{
+        try {
             List<DoctorResponse> doctorResponses = doctorService.getDoctorsList(specialization);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"List of Doctors",doctorResponses));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(500,"Some Error Occured",e.getMessage()));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "List of Doctors", doctorResponses));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(500, "Some Error Occured", e.getMessage()));
         }
     }
+
     @GetMapping("/reports")
-    public ResponseEntity<ApiResponse> reports(){
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"",""));
+    public ResponseEntity<ApiResponse> reports() {
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "", ""));
     }
+
     @PostMapping("/newReport")
-    public ResponseEntity<ApiResponse> uploadReport(){
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200,"",""));
+    public ResponseEntity<ApiResponse> uploadReport() {
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(200, "", ""));
     }
 }

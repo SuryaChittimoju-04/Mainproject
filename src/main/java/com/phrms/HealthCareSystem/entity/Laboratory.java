@@ -14,6 +14,8 @@ public class Laboratory {
     private String id;
     private String name;
     private Boolean isApproved;
+    private String email;
+    private String password;
     private String cloudStorageLink;
     private String cloudStorageType;
     private String address;

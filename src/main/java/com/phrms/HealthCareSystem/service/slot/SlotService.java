@@ -13,4 +13,5 @@ public interface SlotService {
     void createSlot(CreateSlot createSlot);
     void bookSlot(BookSlot bookSlot,String patientId) throws Exception;
     List<SlotResponse> history(String patientId) throws Exception;
+    List<SlotResponse> docHistory(String doctorId) throws Exception;
 }
