@@ -1,13 +1,17 @@
 package com.phrms.HealthCareSystem.service.specialist.doctor;
 
 import com.phrms.HealthCareSystem.dto.DoctorLoginRequest;
+import com.phrms.HealthCareSystem.dto.ReportRequest;
 import com.phrms.HealthCareSystem.entity.Doctor;
 import com.phrms.HealthCareSystem.entity.LabSpecialist;
+import com.phrms.HealthCareSystem.entity.Report;
 import com.phrms.HealthCareSystem.model.DoctorLoginResponse;
 import com.phrms.HealthCareSystem.model.DoctorResponse;
 import com.phrms.HealthCareSystem.model.LoginResponse;
+import com.phrms.HealthCareSystem.model.ReportsResponse;
 import com.phrms.HealthCareSystem.repository.DoctorRepository;
 import com.phrms.HealthCareSystem.repository.LabSpecialistRepository;
+import com.phrms.HealthCareSystem.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,8 @@ public class DoctorServiceImpl implements DoctorService {
     private DoctorRepository doctorRepository;
     @Autowired
     private LabSpecialistRepository labSpecialistRepository;
+    @Autowired
+    private ReportRepository reportRepository;
 
     @Override
     public void RegisterDoctor(Doctor doctor) throws Exception {
@@ -86,6 +92,28 @@ public class DoctorServiceImpl implements DoctorService {
                     doctorResponse.setSpecialization(doctor.getSpecialization());
                     doctorResponse.setPhoneNumber(doctor.getPhoneNumber());
                     return doctorResponse;
+                }).toList();
+    }
+
+    @Override
+    public void uploadReport(ReportRequest reportRequest) throws Exception {
+        Report report = new Report();
+        report.setPatientId(reportRequest.getPatientId());
+        report.setImage(reportRequest.getImage());
+        report.setName(reportRequest.getName());
+        reportRepository.save(report);
+    }
+
+    @Override
+    public List<ReportsResponse> getReports(String patientId) {
+        return reportRepository.findAll()
+                .stream()
+                .map(report -> {
+                    ReportsResponse response = new ReportsResponse();
+                    response.setId(report.getId());
+                    response.setImage(report.getImage());
+                    response.setName(report.getName());
+                    return response;
                 }).toList();
     }
 }
